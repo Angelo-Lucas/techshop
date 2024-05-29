@@ -4,6 +4,7 @@ import com.techshop.domain.Order;
 import com.techshop.repository.OrderRepository;
 import com.techshop.services.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,6 +16,7 @@ public class OrderServiceImpl implements OrderService {
     private OrderRepository orderRepository;
 
     @Override
+    @Cacheable("allOrders")
     public List<Order> getAllOrders() {
         return orderRepository.findAll();
     }

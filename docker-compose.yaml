@@ -1,8 +1,14 @@
-version: '3.8'
+networks:
+  techshop_shared-network:
+    external: true
+
+volumes:
+  mysql-data:
+
 services:
   mysql:
     image: mysql:8.0
-    container_name: mysql-container
+    container_name: techshop-mysql
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
       MYSQL_DATABASE: techshopdb
@@ -12,6 +18,35 @@ services:
       - "3307:3306"
     volumes:
       - mysql-data:/var/lib/mysql
+    networks:
+      - techshop_shared-network
 
-volumes:
-  mysql-data:
+  redis-container:
+    image: redis:latest
+    container_name: techshop-redis
+    restart: always
+    ports:
+      - "6379:6379"
+    networks:
+      - techshop_shared-network
+
+  techshop:
+    image: openjdk:21-slim
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: techshop-consumer
+    depends_on:
+      - mysql
+      - redis-container
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/techshopdb
+      SPRING_DATASOURCE_USERNAME: techshopuser
+      SPRING_DATASOURCE_PASSWORD: techshoppassword
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29093
+      SPRING_REDIS_HOST: redis-container
+      SPRING_REDIS_PORT: 6379
+    ports:
+      - 8081:8080
+    networks:
+      - techshop_shared-network
