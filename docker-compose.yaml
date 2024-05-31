@@ -31,7 +31,6 @@ services:
       - techshop_shared-network
 
   techshop:
-    image: openjdk:21-slim
     build:
       context: .
       dockerfile: Dockerfile
@@ -47,6 +46,8 @@ services:
       SPRING_REDIS_HOST: redis-container
       SPRING_REDIS_PORT: 6379
     ports:
-      - 8081:8080
+      - "9090:9090"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     networks:
       - techshop_shared-network
