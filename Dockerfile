@@ -1,4 +1,4 @@
-FROM openjdk:21-jdk-slim as build
+FROM eclipse-temurin:21.0.3_9-jdk-ubi9-minimal as build
 WORKDIR /workspace/app
 
 COPY mvnw .
@@ -8,7 +8,7 @@ COPY src src
 
 RUN ./mvnw install -DskipTests
 
-FROM openjdk:21-jdk-slim
+FROM eclipse-temurin:21.0.3_9-jre-ubi9-minimal
 WORKDIR /app
 
 COPY --from=build /workspace/app/target/techshop-0.0.1-SNAPSHOT.jar /app/techshop.jar
